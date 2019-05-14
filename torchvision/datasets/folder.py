@@ -5,6 +5,7 @@ from PIL import Image
 import os
 import os.path
 import sys
+import random
 
 
 def has_file_allowed_extension(filename, extensions):
@@ -134,14 +135,19 @@ class DatasetFolder(VisionDataset):
         Returns:
             tuple: (sample, target) where target is class_index of the target class.
         """
-        path, target = self.samples[index]
-        sample = self.loader(path)
-        if self.transform is not None:
-            sample = self.transform(sample)
-        if self.target_transform is not None:
-            target = self.target_transform(target)
+        for _ in range(100):
+            try:
+                path, target = self.samples[index]
+                sample = self.loader(path)
+                if self.transform is not None:
+                    sample = self.transform(sample)
+                if self.target_transform is not None:
+                    target = self.target_transform(target)
 
-        return sample, target
+                return sample, target
+            except Exception as e:
+                print(e)
+                index = random.randint(0,self.__len__())
 
     def __len__(self):
         return len(self.samples)
